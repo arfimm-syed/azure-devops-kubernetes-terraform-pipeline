@@ -8,7 +8,7 @@ pool:
 Jobs:
 - job: Init
 steps:
-- script: echo Validate!
+- script: echo Init!
   displayName: 'Run a one-line script'
 
 - job: Validate
