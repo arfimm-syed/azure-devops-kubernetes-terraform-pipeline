@@ -7,11 +7,10 @@ pool:
 
 Jobs:
 - job: Init
-steps:
-- script: echo Init!
-  displayName: 'Run a one-line script'
-
+  steps:
+  - script: echo Init!
+    displayName: 'Run a one-line script'
 - job: Validate
-steps: 
-- script: echo Validate!
-  displayName: 'Run a multi-line script'
+  steps: 
+  - script: echo Validate!
+    displayName: 'Run a multi-line script'
