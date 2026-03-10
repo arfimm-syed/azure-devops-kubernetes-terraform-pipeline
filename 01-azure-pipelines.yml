@@ -6,11 +6,11 @@ pool:
   vmImage: ubuntu-latest
 
 Jobs:
-- job: Init
+- job: job1
   steps:
-  - script: echo Init!
+  - script: echo job1!
     displayName: 'Run a one-line script'
-- job: Validate
+- job: jobs2
   steps: 
-  - script: echo Validate!
+  - script: echo jobs!
     displayName: 'Run a multi-line script'
