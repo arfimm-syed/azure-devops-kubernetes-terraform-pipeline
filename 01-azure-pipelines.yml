@@ -10,6 +10,10 @@ Jobs:
   steps:
   - script: echo job1!
     displayName: 'Run a one-line script'
+  - script: |
+      echo add other task to biuld
+      echo see https://aka.ms/yaml
+      echo more information
 - job: jobs2
   steps: 
   - script: echo jobs!
