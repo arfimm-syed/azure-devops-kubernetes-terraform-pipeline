@@ -1,0 +1,90 @@
+trigger:
+- main
+
+variables:
+  acrName: noderegistry555
+  imageName: aks-nodejs-helm
+  resourceGroup: aks-demo-rg
+  aksCluster: demo-aks-cluster
+
+stages:
+
+# ========================
+# Stage 1 Create AKS
+# ========================
+
+- stage: Infrastructure
+  jobs:
+
+  - job: Terraform
+    pool:
+      vmImage: ubuntu-latest
+
+    steps:
+
+    - task: TerraformInstaller@1
+      inputs:
+        terraformVersion: 'latest'
+
+    - script: terraform init
+      workingDirectory: terraform
+
+    - script: terraform apply -auto-approve
+      workingDirectory: terraform
+
+# ========================
+# Stage 2 Build Image
+# ========================
+
+- stage: Build
+  dependsOn: Infrastructure
+
+  jobs:
+
+  - job: BuildContainer
+    pool:
+      vmImage: ubuntu-latest
+
+    steps:
+
+    - task: Docker@2
+      inputs:
+        containerRegistry: acr-connection
+        repository: $(imageName)
+        command: buildAndPush
+        Dockerfile: Dockerfile
+        tags: |
+          $(Build.BuildId)
+
+# ========================
+# Stage 3 Deploy Helm
+# ========================
+
+- stage: Deploy
+  dependsOn: Build
+
+  jobs:
+
+  - job: DeployHelm
+    pool:
+      vmImage: ubuntu-latest
+
+    steps:
+
+    - task: HelmInstaller@1
+      inputs:
+        helmVersionToInstall: 'latest'
+
+    - task: HelmDeploy@0
+      inputs:
+        connectionType: Azure Resource Manager
+        azureSubscription: azure-service-connection
+        azureResourceGroup: $(resourceGroup)
+        kubernetesCluster: $(aksCluster)
+        command: upgrade
+        chartType: FilePath
+        chartPath: nodeapp
+        releaseName: nodeapp
+        overrideValues: |
+          image.repository=$(acrName).azurecr.io/$(imageName)
+          image.tag=$(Build.BuildId)
