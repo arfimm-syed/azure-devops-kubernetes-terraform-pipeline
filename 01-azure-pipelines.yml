@@ -5,6 +5,8 @@ trigger:
 pool:
   vmImage: ubuntu-latest
 
+#pipielines > stages > jobs > steps (tasks)
+
 jobs:
 - job: job1
   steps:
